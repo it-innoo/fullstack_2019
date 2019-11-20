@@ -146,6 +146,23 @@ describe('Blogin poistaminen', () => {
 })
 
 describe('Blogin muokkaus', () => {
+  test('onnistuu kelvollisilla parametreilla', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToModify = blogsAtStart[0]
+
+    const { likes } = blogToModify
+    blogToModify.likes += 1
+
+    await api
+      .put(`/api/blogs/${blogToModify.id}`)
+      .send(blogToModify)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const blog = blogsAtEnd[0]
+    expect(blog.likes).toBe(likes + 1)
+  })
 
 })
 
