@@ -137,6 +137,12 @@ describe('Blogin poistaminen', () => {
     const title = blogsAtEnd.map(r => r.title)
     expect(title).not.toContain(blogToDelete.title)
   })
+
+  test('epäonnistuu koodilla 404, jos id on epäkelpo', async () => {
+    await api
+      .delete('/api/blogs/5d55996d5d51af10781599d3')
+      .expect(404)
+  })
 })
 
 describe('Blogin muokkaus', () => {
