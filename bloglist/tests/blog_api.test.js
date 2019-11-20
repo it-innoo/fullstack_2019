@@ -62,6 +62,62 @@ test('a valid blog can be added', async () => {
     .toContain('Go To Statement Considered Harmful')
 })
 
+test('likes defaults to zero', async () => {
+  const newBlog = {
+    title: 'Async/Await',
+    author: 'Me Luv',
+    url: 'url',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const likes = blogsAtEnd
+    .filter(r => r.title === 'Async/Await')
+    .map(r => r.likes)
+
+  expect(blogsAtEnd.length)
+    .toBe(helper.initialBlogs.length + 1)
+
+  expect(likes[0])
+    .toBe(0)
+})
+test('fails with status code 400 if title invalid', async () => {
+  const newBlog = {
+    author: 'Me Luv',
+    url: 'url',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd.length)
+    .toBe(helper.initialBlogs.length)
+})
+
+test('fails with status code 400 if url invalid', async () => {
+  const newBlog = {
+    title: 'Async/Await',
+    author: 'Me Luv',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd.length)
+    .toBe(helper.initialBlogs.length)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
